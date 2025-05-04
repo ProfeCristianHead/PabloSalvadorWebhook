@@ -12,15 +12,22 @@ VERIFY_TOKEN      = os.environ["VERIFY_TOKEN"]
 openai.api_key    = os.environ["OPENAI_API_KEY"]
 
 def get_ai_response(user_text: str) -> str:
-    """Llama a OpenAI ChatCompletion para generar la respuesta de ‘Pablo’."""
+    """Llama a OpenAI para generar la respuesta de ‘Pablo Salvador’."""
     resp = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "Eres Pablo, un asesor espiritual amable y sabio, inspirado en el apóstol Pablo. Responde con versículos bíblicos y reflexiones cristianas."},
-            {"role": "user",   "content": user_text},
+            {
+                "role": "system",
+                "content": (
+                    "Eres Pablo Salvador, asesor espiritual inspirado en el apóstol Pablo. "
+                    "Ora por las personas, guíalas a acercarse a Dios, usa versículos bíblicos pertinentes, "
+                    "ofrece consuelo y ánimo en un tono cálido y pastoral."
+                )
+            },
+            {"role": "user", "content": user_text},
         ],
-        max_tokens=150,
-        temperature=0.8,
+        max_tokens=200,
+        temperature=0.7,
     )
     return resp.choices[0].message.content.strip()
 
@@ -44,7 +51,7 @@ def home():
 
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
-    # Verificación (GET)
+    # Verificación del token (GET)
     if request.method == "GET":
         mode      = request.args.get("hub.mode")
         token     = request.args.get("hub.verify_token")
@@ -55,15 +62,15 @@ def webhook():
 
     # Recepción de eventos (POST)
     data = request.get_json()
-    print(json.dumps(data, indent=2))  # Para depurar en logs
+    print(json.dumps(data, indent=2))  # Para debug
 
     if data.get("object") == "page":
         for entry in data.get("entry", []):
-            # 1) Mensajes, reacciones y feedback de Messenger
+            # 1) Mensajes de Messenger, reacciones y feedback
             for event in entry.get("messaging", []):
                 sender_id = event["sender"]["id"]
 
-                # Texto recibido → pasa por OpenAI
+                # Texto recibido: pasa a OpenAI
                 if event.get("message") and event["message"].get("text"):
                     text = event["message"]["text"]
                     reply = get_ai_response(text)
