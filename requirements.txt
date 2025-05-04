@@ -1,3 +1,4 @@
-flask
-requests
-openai
+Flask==2.3.1
+requests==2.32.3
+openai==0.27.0
+gunicorn==23.0.0
