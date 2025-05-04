@@ -1,12 +1,7 @@
 services:
   - type: web
-    name: pablo-asesor-webhook
+    name: pablo-salvador-webhook
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn main:app
-    envVars:
-      - key: VERIFY_TOKEN
-        fromSecret: VERIFY_TOKEN
-      - key: PAGE_TOKEN
-        fromSecret: PAGE_TOKEN
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn main:app"
